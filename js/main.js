@@ -120,7 +120,7 @@ function loadAll() {
   setTimeout(function() {
     debug("Checking if first time loading.. " + downloadingFileCalled);
     if (downloadingFileCalled) {
-      announce( Pharases.first_load, true );
+      announce( Pharases.first_load );
     }
   }, 10000);
 }
@@ -168,6 +168,21 @@ function debug(message) {
   }
 }
 
+var announce_num = 0;
+function next_announce() {
+  var text = Announcements[ announce_num ];
+  announce( text );
+
+  announce_num++;
+  if (announce_num >= Announcements.length) {
+    announce_num = 0;
+  }
+
+  setTimeout( function() {
+    next_announce();
+  }, Config.announcementLengthForOneChar * text.length )
+}
+
 /**
  * Initial function
  */
@@ -176,16 +191,9 @@ $(document).ready(function() {
   loadBackground();
 
   // print announcement messages every few seconds
-  if (Announcements && Config.enableAnnouncements && Config.announcementLength) {
+  if (Announcements && Config.enableAnnouncements && Config.announcementLengthForOneChar) {
     if (Announcements.length > 0) {
-      var i = 0;
-      setInterval(function() {
-        announce( Announcements[i] );
-        i++;
-        if (i > Announcements.length - 1) {
-          i = 0;
-        }
-      }, Config.announcementLength);
+      next_announce();
     }
   }
 
